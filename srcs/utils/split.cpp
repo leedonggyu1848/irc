@@ -11,7 +11,7 @@ std::vector<std::string>	split(const std::string& str, const std::string& delimi
     while ((pos_end = str.find(delimiter, pos_start)) != std::string::npos) {
         token = str.substr(pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
-        if (token[token.size() -1] == '\r') token.erase(token.size() - 1);
+        if (token[token.size() -1] == '\r') token.pop_back();
         if (token.length() != 0) res.push_back(token);
     }
     token = str.substr(pos_start);
