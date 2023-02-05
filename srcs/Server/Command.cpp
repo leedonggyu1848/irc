@@ -43,12 +43,9 @@ void Command::_handleCAP(Server &server, int fd, const string &msg) {
 void Command::_handleNICK(Server &server, int fd, const string &msg) {
     vector<string> result = split(msg, " ");
     // TODO: 유저가 없을 경우 try catch를 써야하나?
-    User* user = _service.getUserWithFD(fd);
-	cout<<"can reach here?"<<endl;
-    string oldNickname = user->getName();
+    string oldNickname = "*";
     string newNickname;
     string response;
-	(void) fd;
     // "/nick"
     if (result.size() <= 1) {
         // ERR_NONICKNAMEGIVEN, 431,  :No nickname given
@@ -84,17 +81,10 @@ void Command::_handleNICK(Server &server, int fd, const string &msg) {
 }
 
 void Command::_handleUSER(Server &server, int fd, const string &msg) {
-    cout << msg << endl;
+    vector<string> result = split(msg, " ");
 
+    cout << msg << endl;
     cout << "USER!!!" << endl;
-}
-
-
-void Command::_handlePRIVMSG(Server &server, int fd, const string &msg) {
-    (void)fd;
-    (void)server;
-
-    cout << msg << endl;
 }
 
 void Command::_handleLIST(Server &server, int fd, const string &msg) {
@@ -137,13 +127,38 @@ void Command::_handleJOIN(Server &server, int fd, const string &msg) {
 
     // 모든 채널에서 이름으로 조회해서 없으면
     user = _service.getUserWithFD(fd);
-    _service.joinChannelWithUserName(user->getName(), channelName);
+    channel = _service.joinChannelWithUserName(channelName, user->getName());
+
+    vector<User *> list = channel->getUsers();
+    vector<User *>::iterator it;
+
+    for(it = list.begin();it != list.end(); ++it) {
+        std::cout << "list : " << (*it)->getName() << endl;
+    }
         /*
         TODO:
         1. 채널이 invite-only인 경우 초대를 꼭 받아야함.
         2. active-bans에 유저의 /nick/username/hostname이 없어야한다.
         3. 비밀번호가 설정되어 있는 채널이면 올바른 비밀번호를 입력해야한다.
         */
+}
+
+void Command::_handlePRIVMSG(Server &server, int fd, const string &msg) {
+    vector<string> result = split(msg, " ");
+    string  channelName = result.at(1);
+    string  msgInfo = result.at(2);
+    
+    // :ace!root@127.0.0.1 PRIVMSG #test :adsfasdf
+    Channel* channel = _service.getChannelWithName(channelName);
+    vector<User *> users = channel->getUsers();
+    for(vector<User *>::iterator user = users.begin(); user != users.end(); ++user) {
+        cout<<"in vector fd : " << fd << "  user->getFD : " << (*user)->getFD() <<  " msg : " << msgInfo << endl;
+        if (fd != (*user)->getFD()){
+            string response = ":" + _service.getUserWithFD(fd)->getName() + "!yooh@localhost PRIVMSG " + channel->getName() + " " + msgInfo + "\r\n";
+            std::cout <<response << std::endl;
+            sendMessage((*user)->getFD(), response);
+        }
+    }
 }
 
 /* 유저가 없으면 throw함 나중에 처리할 필요가 있음 */ 
@@ -210,13 +225,12 @@ void Command::_handleNOTICE(Server &server, int fd, const string &msg) {
 }
 
 void Command::_handlePASS(Server &server, int fd, const string &msg) {
-    (void)fd;
-    (void)server;
     vector<string> result = split(msg, " ");
     const string &inputPassword = result.at(1);
 
     if (server.getPassword() != inputPassword) {
         string res("Password Wrong\r\n");
+        cout<<res<<endl;
         //_sendMessage(fd, RES_SELF, res, server);
         return;
     }
