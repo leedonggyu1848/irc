@@ -24,9 +24,9 @@ Channel* ServerService::getChannelWithName(const string& channel_name) const {
 }
 
 User*	ServerService::addUser(const string& name, const int& fd) {
-	if (_userManager.getUserWithName(name) || _userManager.getUserWithFD(fd))
-		throw UserAlreadyExist();
-	return _userManager.addUser(name, fd);
+	User* ret = _userManager.addUser(name, fd);
+	if (ret == NULL) throw UserAlreadyExist();
+	return ret;
 }
 
 void ServerService::deleteUser(User* user) {
@@ -46,11 +46,7 @@ void ServerService::deleteUserWithFD(const int& fd) {
 
 Channel* ServerService::joinChannelWithUserName(const string& channel_name, const string& user_name) {
 	Channel* channel = NULL;
-	try {
-		channel = getChannelWithName(channel_name);
-	} catch (const ChannelNotExist& e) {
-		channel = _channelManager.addChannel(channel_name);
-	}
+	channel = _channelManager.addChannel(channel_name);
 	User* user = getUserWithName(user_name);
 	user->joinChannel(channel);
 	channel->addUser(user);

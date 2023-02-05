@@ -65,9 +65,10 @@ public:
 
 	/*
 	* @param userName: 추가할 유저의 이름
-	* @param fd: 추가할 유저의 fd
+	* @param fd: 추가할 유저의 f면
 	* @brief 유저를 추가하고 성공, 실패 여부를 리턴
-	* @throw 만약 유저가 있다면 ServerService::UserAlreadyExist던짐
+	* @throw 만약 유저가 있거나, fd가 존재하면 ServerService::UserAlreadyExist던짐
+	* @return 추가한 User의 포인터값
 	*/
 	User* addUser(const string& userName, const int& fd);
 
@@ -76,6 +77,7 @@ public:
 	* @param userName: 들어갈 유저 이름
 	* @throw 만약 없는 유저라면, ServerService::UserNotExist를 던짐
 	* @brief 만약 채널이 존재하지 않는다면 새로운 채널을 만듬
+	* @return join한 Channel의 포인터값
 	*/
 	Channel* joinChannelWithUserName(const string& channelName, const string& userName);
 
