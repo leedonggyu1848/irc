@@ -32,6 +32,7 @@ private :
 	typedef channels_type::iterator channels_iter;
 	string 					_name;
 	string					_hostname;
+	string					_id;
 	int						_fd;
 	USER_STATUS				_status;
 	unsigned int			_mode_bit;
@@ -47,8 +48,10 @@ public:
 	const string&	getName(void) const;
 	int				getFD(void) const;
 	const string&	getHostname(void) const;
+	const string&	getId(void) const;
 	void			setName(const string& name);
 	void			setHostname(const string& hostname);
+	void			setId(const string& id);
 
 	bool				hasChannel(Channel* const channel) const;
 	void				joinChannel(Channel* channel);

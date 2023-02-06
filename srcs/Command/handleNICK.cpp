@@ -19,8 +19,7 @@ void Command::_handleNICK(Server &server, int fd, const string &msg) {
     // "/nick morethan9letters"
     if (newNickname.length() > 9) {
         // :irc.local 432 <nickname> <nickname> :Erroneus nickname
-        response = string(SERVER_PREFIX) + " 432 " + oldNickname + " " + newNickname +
-                 " :Erroneus nickname";
+        response = string(SERVER_PREFIX) + " 432 " + oldNickname + " " + newNickname + " :Erroneus nickname";
 		cout << response << endl;
         sendMessage(fd, response);
         return;

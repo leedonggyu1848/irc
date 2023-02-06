@@ -19,6 +19,7 @@ private :
 	string							_password;
 	int								_socket;
 	struct pollfd					_pollFDs[MAX_FD_SIZE];
+	string							_buf;
 	Command*						_command;
 
 	void	_acceptConnections(void);
@@ -29,7 +30,6 @@ public :
 	~Server();
 	const string &getPassword() const;
 	const struct pollfd	*getPollFDs() const;
-	const map<string, Channel> &getChannels(void) const;
 
 	/*
 	** @brief server 소켓 liten까지 실행

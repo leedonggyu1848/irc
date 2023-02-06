@@ -8,8 +8,10 @@ User::User(const string& name, const int& fd): _name(name), _fd(fd), _mode_bit(0
 const string& User::getName(void) const { return _name; }
 int	User::getFD(void) const { return _fd; }
 const string& User::getHostname(void) const { return _hostname; }
+const string& User::getId(void) const { return _id; }
 void User::setName(const string& name) { _name = name; }
 void User::setHostname(const string& hostname) { _hostname = hostname; }
+void User::setId(const string& id) { _id = id; }
 
 bool User::hasChannel(Channel* const channel) const {
 	return _channels.find(channel) != _channels.end();

@@ -8,7 +8,7 @@ static bool isAllNumber(const string& str) {
 	return true;
 }
 
-Server::Server(const string& port, const string& password) {
+Server::Server(const string& port, const string& password) :_buf("") {
 	if (port.length() > 5 || !isAllNumber(port)
 		|| (_port = atoi(port.c_str())) > 65535)
 		throw InitServerException();
@@ -75,35 +75,28 @@ void	Server::_sendResponse(void) {
 	vector<string> list;
 	vector<string>::iterator iter;
 
-	vector<string> words;
-	vector<string>::iterator iter2;
-	string msg(":irc.local PRIVMSG ace :*** Raw I/O logging is enabled on this server. All messages, passwords, and commands are being recorded.");
 	for (int i = 1; i < MAX_FD_SIZE; ++i) {
-		switch (_pollFDs[i].revents) {
-			case 0 : //no events
-				break ;
-			case POLLIN : //data is ready
-				length = recv(_pollFDs[i].fd, buf, BUFFER_SIZE, 0);
-				buf[length] = '\0';
- 				list = split(buf, "\n");
-				for(iter = list.begin(); iter != list.end(); ++iter) {
-					cout << "input : [" << *iter <<"]"<<endl;
-					try{
-						_command->execute(*this, _pollFDs[i].fd, *iter);
-					} catch(exception& e) {
-						cerr << e.what() << endl;
-					}
+		if (_pollFDs[i].revents & POLLHUP) {
+			_buf = "";
+			close(_pollFDs[i].fd);
+			_pollFDs[i].fd = -1;
+			_pollFDs->revents = 0;
+		} else if (_pollFDs[i].revents & POLLIN) {
+			length = recv(_pollFDs[i].fd, buf, BUFFER_SIZE, 0);
+			buf[length] = '\0';
+			_buf += string(buf);
+			if (buf[length - 1] != '\n') 
+				break;
+			list = split(_buf, "\n");
+			_buf = "";
+			for(iter = list.begin(); iter != list.end(); ++iter) {
+				try{
+					_command->execute(*this, _pollFDs[i].fd, *iter);
+				} catch(exception& e) {
+					cerr << e.what() << endl;
 				}
-				//for (int j = 1; j < MAX_FD_SIZE; ++j) {
-				//	if (_pollFDs[j].fd != -1 && _pollFDs[i].fd != _pollFDs[j].fd)
-				//		write(_pollFDs[j].fd, msg.c_str(), strlen(msg.c_str()));
-				//}
-				break ;
-			default :
-				close(_pollFDs[i].fd);
-				_pollFDs[i].fd = -1;
-				_pollFDs->revents = 0;
-		}
+			}
+		} 
 	}
 }
 

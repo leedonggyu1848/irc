@@ -20,7 +20,7 @@ void Command::_handleNOTICE(Server &server, int fd, const string &msg) {
             for (vector<User*>::iterator iter = users.begin(); iter != users.end(); iter++)
                 if ((*iter) != sender) sendMessage((*iter)->getFD(), noticeMsg);
         } catch (const exception& e) {
-            noticeMsg = ":irc.local 401 " + sender->getName() + " " + target + " :No such nick/channel";
+            noticeMsg = ":irc.local 401 " + sender->getName() + " " + target + " :No such nick/channel\r\n";
             sendMessage(fd, noticeMsg);
         }
     } else {
@@ -30,7 +30,7 @@ void Command::_handleNOTICE(Server &server, int fd, const string &msg) {
             noticeMsg = ":" + sender->getName() + "!" + HOST_NAME + msg;
             sendMessage(user->getFD(), noticeMsg);
         } catch (const exception& e) {
-            noticeMsg = ":irc.local 401 " + sender->getName() + " " + target + " :No suchnick/channel";
+            noticeMsg = ":irc.local 401 " + sender->getName() + " " + target + " :No suchnick/channel\r\n";
             sendMessage(fd, noticeMsg);
         }
     }

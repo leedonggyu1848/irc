@@ -11,8 +11,8 @@ void Command::_handleJOIN(Server &server, int fd, const string &msg) {
     user = _service.getUserWithFD(fd);
     channel = _service.joinChannelWithUserName(channelName, user->getName());
 
-    string joinMessage = ":" + user->getName() + "!yooh@localhost JOIN :" + channel->getName() + "\r\n";
-    string nameReply   = ":irc.local 353 " + user->getName() + " = " + channel->getName() + " :@";
+    string joinMessage = ":" + user->getName() + "!" + user->getId() + "@" + user->getHostname() + " JOIN :" + channel->getName() + "\r\n";
+    string nameReply   = channel->getName() + " :@";
     
     vector<User *> list = channel->getUsers();
     vector<User *>::iterator it;
@@ -20,13 +20,13 @@ void Command::_handleJOIN(Server &server, int fd, const string &msg) {
         nameReply += (*it)->getName() + " ";
     }
     nameReply += "\r\n";
-    string endOfNames   = ":irc.local 366 " + user->getName() + " " + channel->getName() + " :End of /NAMES list.\r\n";
+    string endOfNames   = channel->getName() + " :End of /NAMES list.\r\n";
 
     sendMessage(fd, joinMessage);
     sendMessage(fd, nameReply);
     sendMessage(fd, endOfNames);
 
-    string response = ":" + user->getName() + "!yooh@localhost JOIN :" + channelName + "\r\n";
+    string response = ":" + user->getName() + "!" + user->getId() + "@" + user->getHostname() + " JOIN :" + channelName + "\r\n";
 
     for(it = list.begin();it != list.end(); ++it) {
         if ((*it)->getFD() != fd) {

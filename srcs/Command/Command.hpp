@@ -23,7 +23,6 @@ private:
 	void	_handleNICK(Server&, int, const string&);
 	void	_handleCAP(Server&, int, const string&);
 	void	_handlePRIVMSG(Server&, int, const string&);
-	void	_handleLIST(Server&, int, const string&);
 	void	_handleINVITE(Server&, int, const string&);
 	void	_handleKICK(Server&, int, const string&);
 	void	_handlePING(Server&, int, const string&);
@@ -35,6 +34,9 @@ private:
 	void	_handleUSER(Server&, int, const string&);
 	void	_handleMODE(Server&, int, const string&);
 
+	void	_handleTOPIC(Server&, int, const string&);
+	void	_handleOPER(Server&, int, const string&);
+	void	_handleLIST(Server&, int, const string&);
 public:
 	Command();
 	void execute(Server& server, int fd, const string& msg);
