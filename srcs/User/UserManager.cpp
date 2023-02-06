@@ -1,34 +1,46 @@
 #include "header.hpp"
 #include "UserManager.hpp"
 
-User	UserManager::getUserWithFD(const int& fd) const {
-	for(users_const_iter iter = _users.begin(); iter != _users.end(); ++iter) {
-		if (iter->second.getFD() == fd)
-			return (*iter).second;
-	}
-	throw runtime_error("Can't find user with fd");
+UserManager::~UserManager() {
+	for (users_iter iter = _users.begin(); iter != _users.end(); ++iter)
+		delete iter->second;
 }
 
-User	UserManager::getUserWithName(const string& name) const {
-	return _users.at(name);
+User*	UserManager::getUserWithFD(const int& fd) const {
+	users_const_iter temp = _users.find(fd);
+	if (temp == _users.end()) return NULL;
+	return temp->second;
 }
 
-void	UserManager::addUser(const string& name, const int& fd) {
-	_users[name] = User(name, fd);
+User*	UserManager::getUserWithName(const string& name) const {
+	for(users_const_iter iter = _users.begin(); iter != _users.end(); ++iter)
+		if (iter->second->getName() == name) return iter->second;
+	return NULL;
 }
- 
-bool	UserManager::nameDupCheck(const string& name) const {
-	for (users_const_iter iter = _users.begin(); iter != _users.end(); ++iter) {
-		if (iter->first == name)
-			return true;
-	}
-	return false;
+
+User*	UserManager::addUser(const string& name, const int& fd) {
+	if (getUserWithName(name) || getUserWithFD(fd)) return NULL;
+	_users[fd] = new User(name, fd);
+	return _users[fd];
 }
 
 void	UserManager::deleteUser(const string& name) {
-	_users.erase(_users.find(name));
+	for (users_iter iter = _users.begin(); iter != _users.end(); ++iter) {
+		if (iter->second->getName() == name) {
+			delete iter->second;
+			_users.erase(iter);
+			return;
+		}
+	}
 }
 
-const map<string, User>& UserManager::getUsers(void) const {
-	return _users;
+void	UserManager::deleteUser(const int& fd) {
+	users_iter temp = _users.find(fd);
+	if (temp == _users.end()) return;
+	delete temp->second;
+	_users.erase(temp);
+}
+
+void	UserManager::deleteUser(User* const user) {
+	deleteUser(user->getFD());
 }

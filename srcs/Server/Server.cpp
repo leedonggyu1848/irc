@@ -94,10 +94,10 @@ void	Server::_sendResponse(void) {
 						cerr << e.what() << endl;
 					}
 				}
-				for (int j = 1; j < MAX_FD_SIZE; ++j) {
-					if (_pollFDs[j].fd != -1 && _pollFDs[i].fd != _pollFDs[j].fd)
-						write(_pollFDs[j].fd, msg.c_str(), strlen(msg.c_str()));
-				}
+				//for (int j = 1; j < MAX_FD_SIZE; ++j) {
+				//	if (_pollFDs[j].fd != -1 && _pollFDs[i].fd != _pollFDs[j].fd)
+				//		write(_pollFDs[j].fd, msg.c_str(), strlen(msg.c_str()));
+				//}
 				break ;
 			default :
 				close(_pollFDs[i].fd);
@@ -105,20 +105,6 @@ void	Server::_sendResponse(void) {
 				_pollFDs->revents = 0;
 		}
 	}
-}
-
-void	Server::_joinChannel(const string &channel, const string &name, const int &fd) {
-	if (_channels.count(channel) == 0)
-		_channels[channel] = Channel(channel);
-	_channels[channel].addUser(name, fd);
-}
-
-void	Server::_partChannel(const string &channel, const string &name) {
-	_channels[channel].deleteUser(name);
-}
-
-UserManager& Server::getUserManager(void) {
-	return _userManager;
 }
 
 const string &Server::getPassword() const {
@@ -131,8 +117,4 @@ const struct pollfd *Server::getPollFDs() const {
 
 const char* Server::InitServerException::what(void) const throw() {
 	return "Initiating Server Failed...";
-}
-
-const map<string, Channel> &Server::getChannels(void) const {
-	return _channels;
 }

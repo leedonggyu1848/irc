@@ -1,11 +1,9 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "Server/Command.hpp"
 #include "header.hpp"
-#include "User/User.hpp"
-#include "User/UserManager.hpp"
-#include "Channel/Channel.hpp"
+#include "Command/Command.hpp"
+#include "Server/ServerService.hpp"
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <string>
@@ -21,15 +19,10 @@ private :
 	string							_password;
 	int								_socket;
 	struct pollfd					_pollFDs[MAX_FD_SIZE];
-	UserManager						_userManager;
-	map<string, Channel>			_channels;
 	Command*						_command;
-	typedef map<string, Channel>::const_iterator	channels_const_iter;
 
 	void	_acceptConnections(void);
 	void	_sendResponse(void);
-	void	_joinChannel(const string &channel, const string &name, const int &fd);
-	void	_partChannel(const string &channel, const string &name);
 
 public :
 	Server(const string& port, const string& password);
@@ -49,8 +42,9 @@ public :
 	*/
 	void	start(void);
 
-	UserManager& getUserManager(void);
-
+	/*
+	** @brief UserManager 멤버 클래스  반반환환
+	*/
 
 	class InitServerException : public exception {
 	public :
