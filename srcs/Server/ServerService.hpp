@@ -4,14 +4,18 @@
 #include "header.hpp"
 #include "Channel/ChannelManager.hpp"
 #include "User/UserManager.hpp"
+#include <map>
+
+using namespace std;
 
 /*
 ** @brief 가능하면 모든 기능은 해당 클래스를 통해서 사용하는 것을 권장함
 */
 class ServerService {
 private:
-	ChannelManager  _channelManager;
-	UserManager     _userManager;
+	ChannelManager 		_channelManager;
+	UserManager     	_userManager;
+	map<int, string>	_passwordMap;
 
 	ServerService operator= (const ServerService& ref);
 	ServerService(const ServerService& ref);
@@ -120,6 +124,19 @@ public:
 	* @throw 만약 newUserNmae이 이미 존재한다면, ServerService::UserExist 던짐
 	*/
 	void changeUserName(const string& oldUserName, const string& newUserName);
+
+	/*
+	* @param fd : 새로 연결 된 fd
+	* @param password : 새로 연결 된 fd가 입력한 password
+	*/
+	void insertPassword(const int& fd, const string& password) {
+		_passwordMap[fd] = password;
+	}
+
+	const string& getMappedPassword(const int& fd) {
+		map<int, string>::iterator it = _passwordMap.find(fd);
+		return it->second;
+	}
 
 	class UserNotExist: public exception {
 	public:

@@ -1,16 +1,16 @@
+#include "ReplieFactory.hpp"
 #include "Command.hpp"
 #include "Utils.hpp"
 
 void Command::_handleNICK(Server &server, int fd, const string &msg) {
     vector<string> result = split(msg, " ");
-    // TODO: 유저가 없을 경우 try catch를 써야하나?
     string oldNickname = "*";
     string newNickname;
     string response;
     // "/nick"
     if (result.size() <= 1) {
         // ERR_NONICKNAMEGIVEN, 431,  :No nickname given
-        response = string(SERVER_PREFIX) + " 431 " + oldNickname + " :No nickname given";
+        response = string(SERVER_PREFIX) + " 431 " +  oldNickname + " " + ERR_NONICKNAMEGIVEN_431();
         cout << response << endl;
         sendMessage(fd, response);
         return;
@@ -19,7 +19,7 @@ void Command::_handleNICK(Server &server, int fd, const string &msg) {
     // "/nick morethan9letters"
     if (newNickname.length() > 9) {
         // :irc.local 432 <nickname> <nickname> :Erroneus nickname
-        response = string(SERVER_PREFIX) + " 432 " + oldNickname + " " + newNickname + " :Erroneus nickname";
+        response = string(SERVER_PREFIX) + " 432 " + oldNickname + " " + ERR_ERRONEUSNICKNAME_432(newNickname);
 		cout << response << endl;
         sendMessage(fd, response);
         return;
@@ -27,7 +27,7 @@ void Command::_handleNICK(Server &server, int fd, const string &msg) {
     try {
         _service.addUser(newNickname, fd);
     } catch (const exception &e) {
-        response = ":" + string(SERVER_PREFIX) + " 433 " + oldNickname + " " + newNickname + " :Nickname is already in use.\r\n";
+        response = ":" + string(SERVER_PREFIX) + " 433 " + oldNickname + " " + ERR_NICKNAMEINUSE_433(newNickname);
         cout << response << endl;
         sendMessage(fd, response);
         cerr << e.what() << endl;

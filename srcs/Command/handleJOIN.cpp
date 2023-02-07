@@ -1,44 +1,29 @@
 #include "Command.hpp"
 #include "Utils.hpp"
+#include "ReplieFactory.hpp"
 
 void Command::_handleJOIN(Server &server, int fd, const string &msg) {
     vector<string>  msgChannel = split(msg, " ");
-    const string&   channelName = msgChannel[1];
-    Channel*        channel = NULL;
-    User*           user = NULL;
+    vector<string> channels = split(msgChannel[1], ",");
 
-    // 모든 채널에서 이름으로 조회해서 없으면
-    user = _service.getUserWithFD(fd);
-    channel = _service.joinChannelWithUserName(channelName, user->getName());
+    for (vector<string>::iterator ch = channels.begin(); ch != channels.end(); ++ch) {
+        const string&   channelName = *ch;
+        // 모든 채널에서 이름으로 조회해서 없으면
+        User* user = _service.getUserWithFD(fd);
+        Channel* channel = _service.joinChannelWithUserName(channelName, user->getName());
+        vector<string> userNames = channel->getUserNames();
+        replace(userNames.begin(), userNames.end(), channel->getOperator()->getName(), "@" + channel->getOperator()->getName());
+        sendMessage(fd, ":" + user->getName() + "!" + user->getId() + "@" + user->getHostname() + " JOIN :" + channel->getName() + "\r\n");
+        sendMessage(fd, ":irc.local 353 " + user->getName() + " = " + RPL_NAMREPLY_353(channel->getName(), userNames));
+        sendMessage(fd, ":irc.local 366 " + user->getName() + " " + RPL_ENDOFNAMES_366(channel->getName()));
 
-    string joinMessage = ":" + user->getName() + "!" + user->getId() + "@" + user->getHostname() + " JOIN :" + channel->getName() + "\r\n";
-    string nameReply   = channel->getName() + " :@";
-    
-    vector<User *> list = channel->getUsers();
-    vector<User *>::iterator it;
-    for (it = list.begin(); it != list.end(); ++it) {
-        nameReply += (*it)->getName() + " ";
-    }
-    nameReply += "\r\n";
-    string endOfNames   = channel->getName() + " :End of /NAMES list.\r\n";
-
-    sendMessage(fd, joinMessage);
-    sendMessage(fd, nameReply);
-    sendMessage(fd, endOfNames);
-
-    string response = ":" + user->getName() + "!" + user->getId() + "@" + user->getHostname() + " JOIN :" + channelName + "\r\n";
-
-    for(it = list.begin();it != list.end(); ++it) {
-        if ((*it)->getFD() != fd) {
-            cout << "[JOIN RESPONSE] " << _service.getUserWithFD((*it)->getFD())->getName() << " >> " << response << endl;
-            sendMessage((*it)->getFD(), response);
+        string response = ":" + user->getName() + "!" + user->getId() + "@" + user->getHostname() + " JOIN :" + channelName + "\r\n";
+        vector<User*> users = channel->getUsers();
+        for(vector<User*>::iterator iter = users.begin(); iter != users.end(); ++iter) {
+            if ((*iter)->getFD() != fd) {
+                cout << "[JOIN RESPONSE] " << (*iter)->getName() << " >> " << response << endl;
+                sendMessage((*iter)->getFD(), response);
+            }
         }
     }
-
-        /*
-        TODO:
-        1. 채널이 invite-only인 경우 초대를 꼭 받아야함.
-        2. active-bans에 유저의 /nick/username/hostname이 없어야한다.
-        3. 비밀번호가 설정되어 있는 채널이면 올바른 비밀번호를 입력해야한다.
-        */
 }

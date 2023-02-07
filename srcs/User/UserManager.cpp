@@ -18,6 +18,10 @@ User*	UserManager::getUserWithName(const string& name) const {
 	return NULL;
 }
 
+void	UserManager::deleteChannelFromUser(Channel* const channel, User* const user) {
+	user->partChannel(channel);
+}
+
 User*	UserManager::addUser(const string& name, const int& fd) {
 	if (getUserWithName(name) || getUserWithFD(fd)) return NULL;
 	_users[fd] = new User(name, fd);

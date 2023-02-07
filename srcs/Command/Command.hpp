@@ -4,7 +4,6 @@
 #include "header.hpp"
 #include "Server/Server.hpp"
 #include "Server/ServerService.hpp"
-#include "Server/Response.hpp"
 #include "poll.h"
 
 #define RES_SELF 0

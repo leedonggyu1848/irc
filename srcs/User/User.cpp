@@ -2,8 +2,14 @@
 
 User User::operator= (const User& ref) { return *this; }
 User::User (const User& ref) {}
-User::User(void): _name("*"), _fd(-1), _mode_bit(0) {}
-User::User(const string& name, const int& fd): _name(name), _fd(fd), _mode_bit(0) { }
+User::User(void): _name("*"), _fd(-1) {
+	_mode_bit = 0;
+	setMode(USER_I);
+}
+User::User(const string& name, const int& fd): _name(name), _fd(fd) {
+	_mode_bit = 0;
+	setMode(USER_I);
+ }
 
 const string& User::getName(void) const { return _name; }
 int	User::getFD(void) const { return _fd; }
@@ -43,7 +49,7 @@ vector<string>	User::getChannelNames(void) const {
 }
 
 void	User::setMode(const UserMode& mode) {
-	_mode_bit &=  1 << mode;
+	_mode_bit |=  1 << mode;
 }
 
 void	User::unsetMode(const UserMode& mode) {
@@ -53,3 +59,5 @@ void	User::unsetMode(const UserMode& mode) {
 bool	User::isSetMode(const UserMode& mode) const {
 	return _mode_bit & (1 << mode);
 }
+
+User::~User() { close(_fd); }

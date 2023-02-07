@@ -8,7 +8,7 @@ static bool isAllNumber(const string& str) {
 	return true;
 }
 
-Server::Server(const string& port, const string& password) :_buf("") {
+Server::Server(const string& port, const string& password) {
 	if (port.length() > 5 || !isAllNumber(port)
 		|| (_port = atoi(port.c_str())) > 65535)
 		throw InitServerException();
@@ -77,18 +77,19 @@ void	Server::_sendResponse(void) {
 
 	for (int i = 1; i < MAX_FD_SIZE; ++i) {
 		if (_pollFDs[i].revents & POLLHUP) {
-			_buf = "";
+			_bufFDs[i] = "";
 			close(_pollFDs[i].fd);
 			_pollFDs[i].fd = -1;
 			_pollFDs->revents = 0;
 		} else if (_pollFDs[i].revents & POLLIN) {
 			length = recv(_pollFDs[i].fd, buf, BUFFER_SIZE, 0);
 			buf[length] = '\0';
-			_buf += string(buf);
+			_bufFDs[i] += string(buf);
+			cout<<"buf : "<<_bufFDs[i]<<endl;
 			if (buf[length - 1] != '\n') 
 				break;
-			list = split(_buf, "\n");
-			_buf = "";
+			list = split(_bufFDs[i], "\n");
+			_bufFDs[i] = "";
 			for(iter = list.begin(); iter != list.end(); ++iter) {
 				try{
 					_command->execute(*this, _pollFDs[i].fd, *iter);
@@ -96,7 +97,7 @@ void	Server::_sendResponse(void) {
 					cerr << e.what() << endl;
 				}
 			}
-		} 
+		}
 	}
 }
 

@@ -44,6 +44,7 @@ private :
 public:
 	User(void);
 	User(const string& name, const int& fd);
+	~User();
 
 	const string&	getName(void) const;
 	int				getFD(void) const;
