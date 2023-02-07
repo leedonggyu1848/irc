@@ -2,7 +2,7 @@
 #include "Utils.hpp"
 #include "ReplieFactory.hpp"
 
-void Command::_handleMODE(Server &server, int fd, const string &msg) {
+void Command::_handleMODE(int fd, const string &msg) {
     // user, channel 구분: 시작 '#'
     vector<string> words = split(msg, " ");
     string target = words[1];
@@ -49,7 +49,7 @@ void Command::_handleMODE(Server &server, int fd, const string &msg) {
 		string addMode = "+";
 		string removeMode = "-";
 		string res = "";
-        for (int i = 0; i < newMode.length(); i++) {
+        for (size_t i = 0; i < newMode.length(); i++) {
             if (newMode[i] == 'i') {
                 if (i > 0 && newMode[i-1] == '-' && user->isSetMode(USER_I)) {
                     user->unsetMode(USER_I);

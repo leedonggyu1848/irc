@@ -13,32 +13,31 @@ class Server;
 
 class Command {
 private:
-	typedef void(Command::*_pfunc)(Server& server, int, const string&);
+	typedef void(Command::*_pfunc)(int, const string&);
 	typedef map<string, _pfunc>::iterator iter_cmd;
 
 	ServerService _service;
 	map<string, _pfunc>	_cmds;
 
-	void	_handleNICK(Server&, int, const string&);
-	void	_handleCAP(Server&, int, const string&);
-	void	_handlePRIVMSG(Server&, int, const string&);
-	void	_handleINVITE(Server&, int, const string&);
-	void	_handleKICK(Server&, int, const string&);
-	void	_handlePING(Server&, int, const string&);
-	void	_handleJOIN(Server&, int, const string&);
-	void	_handleQUIT(Server&, int, const string&);
-	void	_handlePART(Server&, int, const string&);
-	void	_handleNOTICE(Server&, int, const string&);
-	void	_handlePASS(Server&, int, const string&);
-	void	_handleUSER(Server&, int, const string&);
-	void	_handleMODE(Server&, int, const string&);
+	void	_handleNICK(int, const string&);
+	void	_handleCAP(int, const string&);
+	void	_handlePRIVMSG(int, const string&);
+	void	_handleINVITE(int, const string&);
+	void	_handleKICK(int, const string&);
+	void	_handlePING(int, const string&);
+	void	_handleJOIN(int, const string&);
+	void	_handleQUIT(int, const string&);
+	void	_handlePART(int, const string&);
+	void	_handleNOTICE(int, const string&);
+	void	_handlePASS(int, const string&);
+	void	_handleUSER(int, const string&);
+	void	_handleMODE(int, const string&);
+	void	_handleLIST(int, const string&);
 
-	void	_handleTOPIC(Server&, int, const string&);
-	void	_handleOPER(Server&, int, const string&);
-	void	_handleLIST(Server&, int, const string&);
+	Command(void);
 public:
-	Command();
-	void execute(Server& server, int fd, const string& msg);
+	Command(const string& password);
+	void execute(int fd, const string& msg);
 };
 
 void sendMessage(const int& fd, const string& msg);

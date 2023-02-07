@@ -2,7 +2,7 @@
 #include "Command.hpp"
 #include "Utils.hpp"
 
-void Command::_handleNICK(Server &server, int fd, const string &msg) {
+void Command::_handleNICK(int fd, const string &msg) {
     vector<string> result = split(msg, " ");
     string oldNickname = "*";
     string newNickname;

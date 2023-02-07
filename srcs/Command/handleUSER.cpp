@@ -1,7 +1,7 @@
 #include "Command.hpp"
 #include "Utils.hpp"
 
-void Command::_handleUSER(Server &server, int fd, const string &msg) {
+void Command::_handleUSER(int fd, const string &msg) {
     vector<string> result = split(msg, " ");
     User* user = _service.getUserWithFD(fd);
 
@@ -12,8 +12,7 @@ void Command::_handleUSER(Server &server, int fd, const string &msg) {
 
     string response;
     string inputPassword = _service.getMappedPassword(fd);
-    cout<<"Password : "<<server.getPassword()<<endl;
-    if (server.getPassword() != inputPassword) {
+    if (_service.getPassword() != inputPassword) {
         response = ":irc.local 464 " + user->getName() +  " :Password Incorrect\r\n";
         sendMessage(fd, response);
         cout << "ERROR :Closing Link: localhost (Bad Password)\r\n";

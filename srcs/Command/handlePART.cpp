@@ -2,7 +2,7 @@
 #include "Utils.hpp"
 #include "ReplieFactory.hpp"
 
-void Command::_handlePART(Server &server, int fd, const string &msg) {
+void Command::_handlePART(int fd, const string &msg) {
 	vector<string>  msgChannel = split(msg, " ");
 	vector<string>  channels = split(msgChannel[1], ",");
 

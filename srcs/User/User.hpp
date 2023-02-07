@@ -9,11 +9,6 @@
 
 using namespace std;
 
-enum USER_STATUS {
-	NEED_NICKNAME = 0,
-	NEED_USERREGISTER,
-};
-
 enum UserMode {
 	USER_I = 0,
 	USER_S,
@@ -34,7 +29,6 @@ private :
 	string					_hostname;
 	string					_id;
 	int						_fd;
-	USER_STATUS				_status;
 	unsigned int			_mode_bit;
 	channels_type			_channels;
 

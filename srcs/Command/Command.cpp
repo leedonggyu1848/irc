@@ -3,7 +3,7 @@
 #include "header.hpp"
 #include "ReplieFactory.hpp"
 
-Command::Command() {
+Command::Command(const string& password): _service(password) {
     _cmds["CAP"] = &Command::_handleCAP;
     _cmds["NICK"] = &Command::_handleNICK;
     _cmds["PRIVMSG"] = &Command::_handlePRIVMSG;
@@ -20,39 +20,38 @@ Command::Command() {
     _cmds["MODE"] = &Command::_handleMODE;
 }
 
+Command::Command(void): _service("default") {}
+
 void sendMessage(const int& fd, const string& msg) {
     const char *temp = msg.c_str();
     cout << msg;    // TEST
     write(fd, temp, strlen(temp));
 }
 
-void Command::execute(Server &server, int fd, const string &msg) {
+void Command::execute(int fd, const string &msg) {
     vector<string> words = split(msg, " ");
     iter_cmd cmd = _cmds.find(*words.begin());
     if (cmd != _cmds.end())
-        (this->*(cmd->second))(server, fd, msg);
+        (this->*(cmd->second))(fd, msg);
     else
         throw runtime_error("Command has not existed");
 };
 
-void Command::_handleCAP(Server &server, int fd, const string &msg) {
+void Command::_handleCAP(int fd, const string &msg) {
     (void)fd;
-    (void)server;
-
     cout << msg << endl;
 }
 
 
-void Command::_handleLIST(Server &server, int fd, const string &msg) {
+void Command::_handleLIST(int fd, const string &msg) {
     (void)fd;
-    (void)server;
 
     cout << "LIST!!!" << endl;
     cout << msg << endl;
 }
 
 // TODO : invite 모드 체크하고 실행하는 부분 추가 필요
-void Command::_handleINVITE(Server &server, int fd, const string &msg) {
+void Command::_handleINVITE(int fd, const string &msg) {
     
     vector<string> result = split(msg, " ");
     string  userToInviteName = result.at(1);
@@ -84,12 +83,6 @@ void Command::_handleINVITE(Server &server, int fd, const string &msg) {
             break ;
     }
 
-    // if (채널이 mode가 +i인 경우) {
-    //     user가 오퍼레이터인지 확인
-    //         sendMessage(fd, )
-    // }
-
-    // 초대할 유저가 이미 방에 있는지
     if (channel->hasUser(userToInvite)) {
         sendMessage(fd, ERR_USERONCHANNEL_443(userToInviteName, channelName));
     } else {
@@ -100,13 +93,13 @@ void Command::_handleINVITE(Server &server, int fd, const string &msg) {
     }
 }
 
-void Command::_handlePING(Server &server, int fd, const string &msg) {
-    (void)server;
+void Command::_handlePING(int fd, const string &msg) {
+    (void) msg;
     string response = ":irc.local PONG irc.local :irc.local\r\n";
     sendMessage(fd, response);
 }
 
-void Command::_handlePRIVMSG(Server &server, int fd, const string &msg) {
+void Command::_handlePRIVMSG(int fd, const string &msg) {
     vector<string> result = split(msg, " ");
     string  channelName = result.at(1);
     const int idx = msg.find(':');
@@ -125,7 +118,7 @@ void Command::_handlePRIVMSG(Server &server, int fd, const string &msg) {
 }
 
 /* 유저가 없으면 throw함 나중에 처리할 필요가 있음 */ 
-void Command::_handleQUIT(Server &server, int fd, const string &msg) {
+void Command::_handleQUIT(int fd, const string &msg) {
 	string              endMsg      = msg.substr(msg.find(":") + 1, msg.size());
 	string              message     = "ERROR :Closing link: (" + string(HOST_NAME) + ") [Quit: " + endMsg + "]\r\n";
     User*               reqUser     = _service.getUserWithFD(fd);
@@ -146,7 +139,7 @@ void Command::_handleQUIT(Server &server, int fd, const string &msg) {
     }
 }
 
-void Command::_handlePASS(Server &server, int fd, const string &msg) {
+void Command::_handlePASS(int fd, const string &msg) {
     vector<string> result = split(msg, " ");
     const string &inputPassword = result.at(1);
     _service.insertPassword(fd, inputPassword);

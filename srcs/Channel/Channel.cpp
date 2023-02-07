@@ -1,7 +1,7 @@
 #include "Channel.hpp"
 
-Channel Channel::operator= (const Channel& ref) { return *this; }
-Channel::Channel (const Channel& ref) { }
+Channel Channel::operator= (const Channel& ref) { (void) ref; return *this; }
+Channel::Channel (const Channel& ref) { (void) ref; }
 
 Channel::Channel(void):_mode_bit(0) { }
 Channel::Channel(const string &name) : _name(name), _mode_bit(0) { }

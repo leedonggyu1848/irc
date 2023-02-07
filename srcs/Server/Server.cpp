@@ -13,8 +13,7 @@ Server::Server(const string& port, const string& password) {
 		|| (_port = atoi(port.c_str())) > 65535)
 		throw InitServerException();
 	for (int i = 0; i < MAX_FD_SIZE; ++i) _pollFDs[i].fd = -1;
-	_command = new Command();
-	_password = password;
+	_command = new Command(password);
 }
 
 Server::~Server() {
@@ -92,17 +91,13 @@ void	Server::_sendResponse(void) {
 			_bufFDs[i] = "";
 			for(iter = list.begin(); iter != list.end(); ++iter) {
 				try{
-					_command->execute(*this, _pollFDs[i].fd, *iter);
+					_command->execute(_pollFDs[i].fd, *iter);
 				} catch(exception& e) {
 					cerr << e.what() << endl;
 				}
 			}
 		}
 	}
-}
-
-const string &Server::getPassword() const {
-	return this->_password;
 }
 
 const struct pollfd *Server::getPollFDs() const {

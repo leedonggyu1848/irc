@@ -3,7 +3,7 @@
 #include "ReplieFactory.hpp"
 #include "User/UserManager.hpp"
 
-void Command::_handleKICK(Server &server, int fd, const string &msg) {
+void Command::_handleKICK(int fd, const string &msg) {
 	vector<string> words = split(msg, " ");
 	User *user = _service.getUserWithFD(fd);
 	string channelName = words[1];

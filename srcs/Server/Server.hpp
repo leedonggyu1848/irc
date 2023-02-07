@@ -16,7 +16,6 @@ class Server {
 typedef void (Server::*pfunc) (int, string);
 private :
 	int								_port;
-	string							_password;
 	int								_socket;
 	struct pollfd					_pollFDs[MAX_FD_SIZE];
 	string							_bufFDs[MAX_FD_SIZE];
@@ -28,7 +27,6 @@ private :
 public :
 	Server(const string& port, const string& password);
 	~Server();
-	const string &getPassword() const;
 	const struct pollfd	*getPollFDs() const;
 
 	/*

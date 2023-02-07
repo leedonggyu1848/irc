@@ -16,17 +16,20 @@ private:
 	ChannelManager 		_channelManager;
 	UserManager     	_userManager;
 	map<int, string>	_passwordMap;
+	string				_password;
 
 	ServerService operator= (const ServerService& ref);
 	ServerService(const ServerService& ref);
-
-public:
 	ServerService(void);
+public:
+	ServerService(const string& password);
 	~ServerService(void);
 
 	/************************
 	read
 	************************/
+
+	string getPassword(void) const;
 
 	/*
 	* @param userName: 찾고 싶은 유저 이름

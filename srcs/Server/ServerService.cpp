@@ -1,9 +1,20 @@
 #include "ServerService.hpp"
 
-ServerService ServerService::operator= (const ServerService& ref) { return *this; }
-ServerService::ServerService(const ServerService& ref) {}
+ServerService ServerService::operator= (const ServerService& ref) {
+	(void) ref;
+	return *this;
+}
+ServerService::ServerService(const ServerService& ref) { (void) ref; }
 ServerService::ServerService(void){}
 ServerService::~ServerService(void){}
+
+ServerService::ServerService(const string& password) {
+	_password = password;
+}
+
+string ServerService::getPassword(void) const {
+	return _password;
+}
 
 User* ServerService::getUserWithName(const string& user_name) const {
 	User* user = _userManager.getUserWithName(user_name);

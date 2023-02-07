@@ -1,7 +1,12 @@
 #include "User/User.hpp"
 
-User User::operator= (const User& ref) { return *this; }
-User::User (const User& ref) {}
+User User::operator= (const User& ref) {
+	(void) ref;
+	return *this;
+}
+User::User (const User& ref) {
+	(void) ref;
+}
 User::User(void): _name("*"), _fd(-1) {
 	_mode_bit = 0;
 	setMode(USER_I);

@@ -2,7 +2,7 @@
 #include "Utils.hpp"
 #include "ReplieFactory.hpp"
 
-void Command::_handleNOTICE(Server &server, int fd, const string &msg) {
+void Command::_handleNOTICE(int fd, const string &msg) {
 	bool			isChannel;
 	vector<string>	taker = split(msg, " ");
 	string 			noticeMsg;
