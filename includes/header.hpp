@@ -20,10 +20,9 @@ using namespace std;
 
 #define PORT 20162
 #define BUFFER_SIZE 512
-#define LISTEN_QUEUE_SIZE 5
-#define MAX_FD_SIZE 5
-#define MAX_USER_SIZE MAX_FD_SIZE
-#define MAX_CHANNEL_SIZE 5
+#define LISTEN_QUEUE_SIZE 10
+#define MAX_FD_SIZE 10
+#define MAX_CHANNEL_SIZE 10
 
 // MODE
 #define USER_MODE_I 0
